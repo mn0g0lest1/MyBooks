@@ -1,0 +1,63 @@
+﻿@model IEnumerable<MyBooks.Models.BooksModel>
+
+<div class="col-md-8 offset-md-2">
+
+    <h1 class="text-center"><i class="fas text-success"></i> Мої книги</h1>
+
+
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.nameBook)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.genreBook)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.authorBook)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.pagesBook)
+                </th>
+                <th>
+                    <a onclick="showInPopup('@Url.Action("AddOrEdit","BooksModels",null,Context.Request.Scheme)','AddBook')" class="btn btn-success text-white"> Добавити книгу</a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.nameBook)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.genreBook)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Date)
+    </td>
+    <th>
+        @Html.DisplayFor(modelItem => item.authorBook)
+    </th>
+    <td>
+        @Html.DisplayFor(modelItem => item.pagesBook)
+    </td>
+    <td>
+        <div>
+            <a onclick="showInPopup('@Url.Action("AddOrEdit","BooksModels",new {id=item.bookId},Context.Request.Scheme)')" class="btn btn-info text-white"><i class="fas fa-pencil-alt"></i> Редагувати</a>
+            <form asp-action="Видалити" asp-route-id="@item.bookId" onsubmit="return jQueryAjaxDelete(this)" class="d-inline">
+                <input type="hidden" asp-for="@item.bookId" />
+                <input type="submit" value="Видалити" class="btn btn-danger" />
+            </form>
+        </div>
+    </td>
+</tr>
+}
+        </tbody>
+    </table>
+</div>

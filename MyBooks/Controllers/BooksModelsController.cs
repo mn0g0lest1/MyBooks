@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBooks.Models;
+using static MyBooks.Helper;
 
 namespace MyBooks.Controllers
 {
@@ -24,97 +25,60 @@ namespace MyBooks.Controllers
             return View(await _context.Book.ToListAsync());
         }
 
-        // GET: BooksModels/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Transaction/AddOrEdit(Insert)
+        // GET: Transaction/AddOrEdit/5(Update)
+        [NoDirectAccess]
+        public async Task<IActionResult> AddOrEdit(int id = 0)
         {
-            if (id == null)
+            if (id == 0)
+                return View(new BooksModel());
+            else
             {
-                return NotFound();
-            }
-
-            var booksModel = await _context.Book
-                .FirstOrDefaultAsync(m => m.bookId == id);
-            if (booksModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(booksModel);
-        }
-
-        // GET: BooksModels/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: BooksModels/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("bookId,nameBook,genreBook,authorBook,pagesBook,Date")] BooksModel booksModel)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(booksModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(booksModel);
-        }
-
-        // GET: BooksModels/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var booksModel = await _context.Book.FindAsync(id);
-            if (booksModel == null)
-            {
-                return NotFound();
-            }
-            return View(booksModel);
-        }
-
-        // POST: BooksModels/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("bookId,nameBook,genreBook,authorBook,pagesBook,Date")] BooksModel booksModel)
-        {
-            if (id != booksModel.bookId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                var booksModel = await _context.Book.FindAsync(id);
+                if (booksModel == null)
                 {
-                    _context.Update(booksModel);
+                    return NotFound();
+                }
+                return View(booksModel);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddOrEdit(int id, [Bind("bookId,nameBook,genreBook,authorBook,pagesBook,Date")] BooksModel booksModel)
+        {
+            if (ModelState.IsValid)
+            {
+                if (id == 0)
+                {
+                    booksModel.Date = DateTime.Now;
+                    _context.Add(booksModel);
                     await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BooksModelExists(booksModel.bookId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(booksModel);
-        }
 
+                }
+                // Обнова
+                else
+                {
+                    try
+                    {
+                        _context.Update(booksModel);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!BooksModelExists(booksModel.bookId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        { throw; }
+                    }
+                }
+                return Json(new { isValid = true, html = RenderRazorViewToString(this, "_ViewAll", _context.Book.ToList()) });
+            }
+            return Json(new { isValid = false, html = RenderRazorViewToString(this, "AddOrEdit", booksModel) });
+        }
+        
         // GET: BooksModels/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -134,14 +98,14 @@ namespace MyBooks.Controllers
         }
 
         // POST: BooksModels/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Видалити")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var booksModel = await _context.Book.FindAsync(id);
             _context.Book.Remove(booksModel);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Json(new { html = RenderRazorViewToString(this, "_ViewAll", _context.Book.ToList()) });
         }
 
         private bool BooksModelExists(int id)
