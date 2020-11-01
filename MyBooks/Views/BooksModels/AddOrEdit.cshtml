@@ -1,0 +1,56 @@
+﻿@model MyBooks.Models.BooksModel
+
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit" asp-route-id="@Model.bookId" onsubmit="return jQueryAjaxPost(this);">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="bookId" />
+            <input type="hidden" asp-for="Date" />
+            <div class="form-group">
+                <label asp-for="nameBook" class="control-label"></label>
+                <div class="input-group">
+                    <input asp-for="nameBook" class="form-control" />
+                </div>
+                <span asp-validation-for="nameBook" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="genreBook" class="control-label"></label>
+                        <input asp-for="genreBook" class="form-control" />
+                        <span asp-validation-for="genreBook" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="authorBook" class="control-label"></label>
+                        <input asp-for="authorBook" class="form-control" />
+                        <span asp-validation-for="authorBook" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="pagesBook" class="control-label"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            </div>
+                            <input asp-for="pagesBook" class="form-control" />
+                        </div>
+                        <span asp-validation-for="pagesBook" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6 offset-md-3">
+                    <input type="submit" value="Зберегти" class="btn btn-primary btn-block" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
